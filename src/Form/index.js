@@ -23,7 +23,7 @@ const Form = ({onAddRow}) => {
   };
 
   return (
-    <div style={{margin:"20px auto", }} >
+    <div style={{margin:"20px 20px", width: '500px' }} >
     <div >
   
     <form onSubmit={onFormSubmit} className = "container">

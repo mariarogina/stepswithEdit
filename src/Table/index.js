@@ -4,16 +4,17 @@ import { useState, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { faWindowClose } from "@fortawesome/free-solid-svg-icons";
-import moment from "moment";
+
 
 const pencil = <FontAwesomeIcon icon={faPencilAlt} />;
 const close = <FontAwesomeIcon icon={faWindowClose} />;
 
 const Table = () => {
   const [table, setTable] = useState([]);
-  const [checkedLines, setCheckedLines] = useState([])
+  const [checkedLines, setCheckedLines] = useState([]);
 
-  const onAddRow = (form) => {
+  const onAddRow = useCallback (
+    (form) => {
     let newTable = [];
 
     let exists = false;
@@ -45,40 +46,60 @@ const Table = () => {
     newTable.sort((a, b) => (a.date > b.date ? 1 : b.date > a.date ? -1 : 0));
 
     setTable(newTable);
-  };
+  }, [table, setTable]
+  )
 
-  const onDeleteRow = (id) => {
+  const onDeleteRow = useCallback(
+     (id) => {
     const newTable = table.filter((item) => item.id !== id);
 
     setTable(newTable);
-  };
-  const handleCheckLine = useCallback((item, index) => {
-    setCheckedLines(prevList => {
-      if (prevList.find(item => item === index)) {
-        return prevList.filter(f => f !== index)
-      } else {
-        return [...prevList, index]
-      }
-    })
-  }, [])
+  },[table,setTable])
 
-  const onEditRow = (e) => {
-    console.log(e);
-  };
+  const handleCheckLine = useCallback(
+    (id) => {
+      setCheckedLines((prevList) => {
+        if (prevList.find((item) => item.id === id)) {
+          return prevList.filter((f) => f.id !== id);
+        } else {
+          return [...prevList, id];
+        }
+      });
+    },
+    [setCheckedLines]
+  )
+
+  const onEditRow =  useCallback(
+    (event, line) => {
+    const newValue = event.target.value
+    const fieldName = event.target.name
+    setTable(oldList => {
+      return oldList.map((item, index) => {
+        if (index === line) {
+          return {...item, [fieldName]: newValue}
+        } else {
+          return item
+        }
+      })
+    })
+  },
+  [setTable]
+)
 
   return (
-    <div style={{ width: "500px",  margin: "10px 60px" }}>
+    <div>
       <Form onAddRow={onAddRow} />
       <div
         className="table"
         style={{
           textAlign: "center",
-          margin: "20px auto",
+          margin: "10px 10px",
           borderRadius: "15px",
-          height:"80vh"
+          height: "80vh",
+          width: "600px",
         }}
       >
-        <table >
+        <table>
           <thead>
             <tr className="row" style={{ border: "none" }}>
               <th
@@ -113,36 +134,54 @@ const Table = () => {
               >
                 Удалить
               </th>
+              
             </tr>
           </thead>
           <tbody>
-            {table.map((item, index) => {
-                    const isCheckedLine = checkedLines.includes(index)
-              return <tr
-                className="row"
-                style={{ display: "flex", border: "none" }}
-                key={item.id}
-              >
-              <th scope="row">{index}</th>
-                <td className="col" style={{ width: "120px" }}>
-                {isCheckedLine ? <input
-                            type="text"
-                            name={"date"}
-                            defaultValue={moment(item.date).format("DD/MM/YYYY")}
-                            onChange={(event) => onEditRow(event)}
-                          /> : moment(item.date).format("DD/MM/YYYY")}
+            {table.map((item,index) => {
+              const isCheckedLine = checkedLines.includes(item.id);
+              return (
+                <tr
+                  className="row"
+                  style={{ display: "flex", border: "none" }}
+                  key={item.id}
+                >
+                  <th scope="row"></th>
+                  <td className="col" style={{ width: "120px" }}>
+                    {isCheckedLine ? (
+                      <input
+                        type="text"
+                        name={"date"}
+                        defaultValue={item.date}
+                        onChange={(event) => onEditRow(event, index)}
+                      />
+                    ) : (
+                      item.date
+                    )}
+                  </td>
+                  <td className="col" style={{ width: "120px" }}>
+                    {isCheckedLine ? (
+                      <input
+                        type="text"
+                        name={"km"}
+                        defaultValue={item.km}
+                        onChange={(event) => onEditRow(event, index)}
+                      />
+                    ) : (
+                      item.km
+                    )}
+                  </td>
+                  <td className="col" style={{ width: "120px" }}>
+                    <button onClick={handleCheckLine(item)}>{pencil}</button>
+                  </td>
+                  <td className="col" style={{ width: "120px" }}>
+                    <button onClick={() => onDeleteRow(item.id)}>
+                      {close}
+                    </button>
+                  </td>
                   
-                </td>
-                <td className="col" style={{ width: "120px" }}>
-                  {item.km} км
-                </td>
-                <td className="col" style={{ width: "120px" }}>
-                  <button onClick={handleCheckLine(index)}>{pencil}</button>
-                </td>
-                <td className="col" style={{ width: "120px" }}>
-                  <button onClick={() => onDeleteRow(item.id)}>{close}</button>
-                </td>
-              </tr>
+                </tr>
+              );
             })}
           </tbody>
         </table>
