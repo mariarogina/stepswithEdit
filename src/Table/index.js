@@ -6,85 +6,82 @@ import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { faWindowClose } from "@fortawesome/free-solid-svg-icons";
 
 
-const pencil = <FontAwesomeIcon icon={faPencilAlt} />;
 const close = <FontAwesomeIcon icon={faWindowClose} />;
+const pencil = <FontAwesomeIcon icon={faPencilAlt} />;
 
 const Table = () => {
   const [table, setTable] = useState([]);
   const [checkedLines, setCheckedLines] = useState([]);
 
-  const onAddRow = useCallback (
+  const onAddRow = useCallback(
     (form) => {
-    let newTable = [];
+      let newTable = [];
 
-    let exists = false;
+      let exists = false;
 
-    table.forEach((item) => {
-      if (item.date === form.date) {
-        exists = true;
-      }
-    });
-
-    if (exists) {
-      newTable = table.map((item) => {
+      table.forEach((item) => {
         if (item.date === form.date) {
-          item.km = parseInt(form.km) + parseInt(item.km);
+          exists = true;
         }
-        return item;
       });
-    } else {
-      newTable = [
-        ...table,
-        {
-          id: uuid(),
-          date: form.date,
-          km: form.km,
-        },
-      ];
-    }
 
-    newTable.sort((a, b) => (a.date > b.date ? 1 : b.date > a.date ? -1 : 0));
+      if (exists) {
+        newTable = table.map((item) => {
+          if (item.date === form.date) {
+            item.km = parseInt(form.km) + parseInt(item.km);
+          }
+          return item;
+        });
+      } else {
+        newTable = [
+          ...table,
+          {
+            id: uuid(),
+            date: form.date,
+            km: form.km,
+          },
+        ];
+      }
 
-    setTable(newTable);
-  }, [table, setTable]
-  )
+      newTable.sort((a, b) => (a.date > b.date ? 1 : b.date > a.date ? -1 : 0));
+
+      setTable(newTable);
+    },
+    [table, setTable]
+  );
 
   const onDeleteRow = useCallback(
-     (id) => {
-    const newTable = table.filter((item) => item.id !== id);
-
-    setTable(newTable);
-  },[table,setTable])
-
-  const handleCheckLine = useCallback(
     (id) => {
-      setCheckedLines((prevList) => {
-        if (prevList.find((item) => item.id === id)) {
-          return prevList.filter((f) => f.id !== id);
-        } else {
-          return [...prevList, id];
-        }
-      });
-    },
-    [setCheckedLines]
-  )
+      const newTable = table.filter((item) => item.id !== id);
 
-  const onEditRow =  useCallback(
-    (event, line) => {
-    const newValue = event.target.value
-    const fieldName = event.target.name
-    setTable(oldList => {
+      setTable(newTable);
+    },
+    [table, setTable]
+  );
+
+  const handleCheckLine = useCallback((item) => {
+    setCheckedLines((prevList) => {
+      if (prevList.find((o) => o === item.id)) {
+        return prevList.filter((f) => f !== item.id);
+      } else {
+        return [...prevList, item.id];
+      }
+    });
+  }, [setCheckedLines])
+
+  const onEditRow = useCallback((event, line) => {
+    const newValue = event.target.value;
+    const fieldName = event.target.name;
+    setTable((oldList) => {
       return oldList.map((item, index) => {
         if (index === line) {
-          return {...item, [fieldName]: newValue}
+          return { ...item, [fieldName]: newValue };
         } else {
-          return item
+          return item;
         }
-      })
+     })
     })
-  },
-  [setTable]
-)
+  }, [])
 
   return (
     <div>
@@ -134,23 +131,22 @@ const Table = () => {
               >
                 Удалить
               </th>
-              
             </tr>
           </thead>
           <tbody>
-            {table.map((item,index) => {
+            {table.map((item, index) => {
               const isCheckedLine = checkedLines.includes(item.id);
               return (
                 <tr
-                  className="row"
-                  style={{ display: "flex", border: "none" }}
+                  className="row table-tr"
                   key={item.id}
+                  style={{backgroundColor: isCheckedLine ? 'yellow' : 'transparent', border:"none"}}
                 >
                   <th scope="row"></th>
-                  <td className="col" style={{ width: "120px" }}>
+                  <td className="col" style={{ width: "120px",  }}>
                     {isCheckedLine ? (
                       <input
-                        type="text"
+                        type="date"
                         name={"date"}
                         defaultValue={item.date}
                         onChange={(event) => onEditRow(event, index)}
@@ -162,7 +158,7 @@ const Table = () => {
                   <td className="col" style={{ width: "120px" }}>
                     {isCheckedLine ? (
                       <input
-                        type="text"
+                        type="number"
                         name={"km"}
                         defaultValue={item.km}
                         onChange={(event) => onEditRow(event, index)}
@@ -172,14 +168,17 @@ const Table = () => {
                     )}
                   </td>
                   <td className="col" style={{ width: "120px" }}>
-                    <button onClick={handleCheckLine(item)}>{pencil}</button>
+                  <button onClick={() => handleCheckLine(item)}>
+                      {pencil}
+                    </button>
+                  
+                    
                   </td>
                   <td className="col" style={{ width: "120px" }}>
                     <button onClick={() => onDeleteRow(item.id)}>
                       {close}
                     </button>
                   </td>
-                  
                 </tr>
               );
             })}

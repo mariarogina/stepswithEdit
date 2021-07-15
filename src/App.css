@@ -43,3 +43,11 @@
   height: 200px;
   border: 2px solid black;
 }
+
+
+.table-tr input {
+  border: 0;
+  background-color: transparent;
+  display: flex;
+  width: 102px;
+}
