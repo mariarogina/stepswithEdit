@@ -1,9 +1,11 @@
 import { useState } from "react";
+import PropTypes from 'prop-types';
+
 
 const InitialForm = {
-  id:"",
+    id:"",
     date: new Date(),
-    km: undefined,
+    km: '',
   }
 
 const Form = ({onAddRow}) => {
@@ -55,6 +57,7 @@ const Form = ({onAddRow}) => {
           value={form.km} 
           id="km" 
           name="km" 
+          type="number"
           onChange={onFieldChange} 
           required
           style={{borderRadius:"6px"}}

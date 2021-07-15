@@ -145,6 +145,8 @@ const Table = () => {
                   style={{
                     backgroundColor: isCheckedLine ? "yellow" : "transparent",
                     border: "none",
+                    width:'500px',
+                    margin:"10px 10px"
                   }}
                 >
                   <th scope="row"></th>
@@ -154,7 +156,7 @@ const Table = () => {
                         type="date"
                         name={"date"}
                         defaultValue={item.date}
-                        onChange={(event) => onEditRow(event, index)}
+                        onChange={(event) => (event.target.value.length > 10 ? console.log("error") : onEditRow(event, index)) }
                       />
                     ) : (
                       item.date
