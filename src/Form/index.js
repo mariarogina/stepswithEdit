@@ -71,4 +71,13 @@ const Form = ({onAddRow}) => {
   );
 };
 
+Form.propTypes = {
+  onAddRow: PropTypes.func,
+};
+
+Form.defaultProps = {
+  onAddRow: () => {},
+};
+
+
 export default Form;

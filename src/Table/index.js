@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { faWindowClose } from "@fortawesome/free-solid-svg-icons";
 
-
 const close = <FontAwesomeIcon icon={faWindowClose} />;
 const pencil = <FontAwesomeIcon icon={faPencilAlt} />;
 
@@ -59,15 +58,18 @@ const Table = () => {
     [table, setTable]
   );
 
-  const handleCheckLine = useCallback((item) => {
-    setCheckedLines((prevList) => {
-      if (prevList.find((o) => o === item.id)) {
-        return prevList.filter((f) => f !== item.id);
-      } else {
-        return [...prevList, item.id];
-      }
-    });
-  }, [setCheckedLines])
+  const handleCheckLine = useCallback(
+    (item) => {
+      setCheckedLines((prevList) => {
+        if (prevList.find((o) => o === item.id)) {
+          return prevList.filter((f) => f !== item.id);
+        } else {
+          return [...prevList, item.id];
+        }
+      });
+    },
+    [setCheckedLines]
+  );
 
   const onEditRow = useCallback((event, line) => {
     const newValue = event.target.value;
@@ -79,9 +81,9 @@ const Table = () => {
         } else {
           return item;
         }
-     })
-    })
-  }, [])
+      });
+    });
+  }, []);
 
   return (
     <div>
@@ -140,10 +142,13 @@ const Table = () => {
                 <tr
                   className="row table-tr"
                   key={item.id}
-                  style={{backgroundColor: isCheckedLine ? 'yellow' : 'transparent', border:"none"}}
+                  style={{
+                    backgroundColor: isCheckedLine ? "yellow" : "transparent",
+                    border: "none",
+                  }}
                 >
                   <th scope="row"></th>
-                  <td className="col" style={{ width: "120px",  }}>
+                  <td className="col" style={{ width: "120px" }}>
                     {isCheckedLine ? (
                       <input
                         type="date"
@@ -168,11 +173,9 @@ const Table = () => {
                     )}
                   </td>
                   <td className="col" style={{ width: "120px" }}>
-                  <button onClick={() => handleCheckLine(item)}>
+                    <button onClick={() => handleCheckLine(item)}>
                       {pencil}
                     </button>
-                  
-                    
                   </td>
                   <td className="col" style={{ width: "120px" }}>
                     <button onClick={() => onDeleteRow(item.id)}>
